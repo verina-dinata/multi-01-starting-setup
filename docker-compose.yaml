@@ -1,0 +1,36 @@
+version: '3.8'
+services:
+  mongodb:
+    image: 'mongo'
+    volumes:
+      - data:/data/db
+    # environment:
+      # MONGO_INITDB_ROOT_USERNAME: max
+      # MONGO_INITDB_ROOT_PASSWORD: secret
+    env_file:
+      # relative path from docker-compose file to the env file
+      - ./env/mongo.env
+    # don't need to add network since all services (containers) in 1 docker compose file are already in the same network
+  backend:
+    build: ./backend
+    # build:
+    #   context: ./backend
+    #   dockerfile: Dockerfile
+    #   args:
+    #     some-arg: 1
+    ports:
+      - '80:80'
+    volumes:
+      - logs:/app/logs
+      - ./backend:/app
+      - /app/node_modules
+    env-env_file:
+      - ./env/backend.env
+    depends_on:
+      - mongodb
+  # frontend:
+
+# named volumes should be specified here
+volumes:
+  data:
+  logs:
